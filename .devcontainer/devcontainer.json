@@ -16,7 +16,6 @@
 	],
 	"postCreateCommand": [
 		"mkdir -p ~/.ssh && cp -r ~/.ssh-localhost/* ~/.ssh && chmod 700 ~/.ssh && chmod 600 ~/.ssh/*"
-		// "git config user.email timothy.sparg@gmail.com"
 	]
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
