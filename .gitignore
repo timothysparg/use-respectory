@@ -1,3 +1,4 @@
 node_modules
 out
 github.token
+*.js

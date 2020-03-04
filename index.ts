@@ -1,18 +1,19 @@
-import { GitCommandGitProject } from "@atomist/automation-client/lib/project/git/GitCommandGitProject";
-import { ProjectOperationCredentials } from "@atomist/automation-client/lib/operations/common/ProjectOperationCredentials";
-import { GitHubRepoRef } from "@atomist/automation-client/lib/operations/common/GitHubRepoRef";
-// extract out as well
-import { findMatches } from "@atomist/automation-client/lib/tree/ast/astUtils";
-import { JavaFileParser } from "@atomist/antlr/lib/tree/ast/antlr/java/JavaFileParser";
+import {
+    findMatches,
+    GitCommandGitProject,
+    GitHubRepoRef,
+    ProjectOperationCredentials
+} from "respectory";
+import { JavaFileParser } from "@atomist/antlr";
 import * as fs from "fs-extra";
 
 const main = async function () {
 
-    const clientToken = await fs.readFile("github.token","utf8");
+    const clientToken = await fs.readFile("github.token", "utf8");
 
     // clone a repository
     const gitRepository = await GitCommandGitProject.cloned(
-        {token: clientToken} as ProjectOperationCredentials,
+        { token: clientToken } as ProjectOperationCredentials,
         new GitHubRepoRef("timothysparg", "horseguards")
     );
 
@@ -29,10 +30,10 @@ const main = async function () {
 
     // make a change
     let commitMessage;
-    if(c.includes("theStatusCode")){
+    if (c.includes("theStatusCode")) {
         c = c.split("theStatusCode").join("statusCode");
         commitMessage = "changed 'theStatuscode' to 'statusCode'";;
-    }else{
+    } else {
         c = c.split("statusCode").join("theStatusCode");
         commitMessage = "changed 'statuscode' to 'theStatusCode'";;
     }
@@ -42,20 +43,23 @@ const main = async function () {
     await f.flush();
 
     //make a branch
-    if (!await gitRepository.hasBranch("hello-world")){
+    if (await gitRepository.hasBranch("hello-world")) {
+        console.log("delete the remote branch before proceeding");
+        return 1;
+    } else {
         await gitRepository.createBranch("hello-world");
     }
 
     // make a commit
     await gitRepository.commit(commitMessage);
     console.log(await gitRepository.gitStatus());
-    
+
     //push
     await gitRepository.push();
 
     // make a pull request
     await gitRepository.raisePullRequest("hello world", "from my use-respectory client");
     console.log("pause");
-}
+    }
 
 main();
